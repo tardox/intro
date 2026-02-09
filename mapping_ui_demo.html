@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Value Mapping - POC Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .mapping-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        select, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .arrow {
+            text-align: center;
+            font-size: 24px;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .mappings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .mappings-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .mappings-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .mappings-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .mappings-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-original {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-customer {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #ff3838;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .info-box p {
+            color: #1565c0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Customer Value Mapping</h1>
+            <p>Map your custom terminology to standard values</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <p><strong>How it works:</strong> Select a standard value from our system, then enter your organization's custom term. The system will automatically treat your custom values as the standard value in all calculations.</p>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Add New Mapping</div>
+                
+                <div class="mapping-form">
+                    <div class="form-group">
+                        <label for="entity">Table</label>
+                        <select id="entity">
+                            <option value="Events">Events</option>
+                            <option value="Assets">Assets</option>
+                            <option value="Personnel">Personnel</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="field">Field Name</label>
+                        <select id="field">
+                            <option value="Event Type">Event Type</option>
+                            <option value="Status">Status</option>
+                            <option value="Priority">Priority</option>
+                            <option value="Category">Category</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="standard">Standard Value</label>
+                        <select id="standard">
+                            <option value="Incident">Incident</option>
+                            <option value="Near Miss">Near Miss</option>
+                            <option value="Observation">Observation</option>
+                            <option value="Audit">Audit</option>
+                            <option value="Inspection">Inspection</option>
+                        </select>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="form-group">
+                        <label for="custom">Your Custom Value</label>
+                        <input type="text" id="custom" placeholder="e.g., Safety Alert, EHS Incident, Work Event..." />
+                    </div>
+
+                    <button class="btn" onclick="addMapping()">➕ Add Mapping</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Current Mappings</div>
+                
+                <table class="mappings-table">
+                    <thead>
+                        <tr>
+                            <th>Table</th>
+                            <th>Field Name</th>
+                            <th>Standard Value</th>
+                            <th>Your Custom Value</th>
+                            <th>Source</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mappings-body">
+                        <tr>
+                            <td>Events</td>
+                            <td>Event Type</td>
+                            <td>Incident</td>
+                            <td>EHS Incident</td>
+                            <td><span class="badge badge-original">Original</span></td>
+                            <td><button class="delete-btn" disabled>Built-in</button></td>
+                        </tr>
+                        <tr>
+                            <td>Events</td>
+                            <td>Event Type</td>
+                            <td>Incident</td>
+                            <td>Near Miss</td>
+                            <td><span class="badge badge-original">Original</span></td>
+                            <td><button class="delete-btn" disabled>Built-in</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let mappings = [
+            { entity: 'Events', field: 'Event Type', standard: 'Incident', custom: 'EHS Incident', source: 'Original' },
+            { entity: 'Events', field: 'Event Type', standard: 'Incident', custom: 'Near Miss', source: 'Original' }
+        ];
+
+        function addMapping() {
+            const entity = document.getElementById('entity').value;
+            const field = document.getElementById('field').value;
+            const standard = document.getElementById('standard').value;
+            const custom = document.getElementById('custom').value.trim();
+
+            if (!custom) {
+                alert('Please enter your custom value');
+                return;
+            }
+
+            // Check for duplicates
+            const exists = mappings.some(m => 
+                m.entity === entity && 
+                m.field === field && 
+                m.standard === standard && 
+                m.custom === custom
+            );
+
+            if (exists) {
+                alert('This mapping already exists!');
+                return;
+            }
+
+            mappings.push({
+                entity: entity,
+                field: field,
+                standard: standard,
+                custom: custom,
+                source: 'Customer'
+            });
+
+            renderMappings();
+            document.getElementById('custom').value = '';
+            
+            // Animation feedback
+            const btn = document.querySelector('.btn');
+            btn.textContent = '✓ Added!';
+            btn.style.background = '#10ac84';
+            setTimeout(() => {
+                btn.textContent = '➕ Add Mapping';
+                btn.style.background = '';
+            }, 1500);
+        }
+
+        function deleteMapping(index) {
+            if (confirm('Delete this mapping?')) {
+                mappings.splice(index, 1);
+                renderMappings();
+            }
+        }
+
+        function renderMappings() {
+            const tbody = document.getElementById('mappings-body');
+            tbody.innerHTML = '';
+
+            mappings.forEach((mapping, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${mapping.entity}</td>
+                    <td>${mapping.field}</td>
+                    <td>${mapping.standard}</td>
+                    <td><strong>${mapping.custom}</strong></td>
+                    <td><span class="badge badge-${mapping.source.toLowerCase()}">${mapping.source}</span></td>
+                    <td>
+                        ${mapping.source === 'Customer' 
+                            ? `<button class="delete-btn" onclick="deleteMapping(${index})">Delete</button>`
+                            : `<button class="delete-btn" disabled>Built-in</button>`
+                        }
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('custom').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addMapping();
+            }
+        });
+    </script>
+</body>
+</html>
