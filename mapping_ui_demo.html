@@ -222,7 +222,7 @@
 
         <div class="content">
             <div class="info-box">
-                <p><strong>How it works:</strong> Select a standard value from our system, then enter your organization's custom term. The system will automatically treat your custom values as the standard value in all calculations.</p>
+                <p><strong>How it works:</strong> Select a standard value from our system, then enter your organization's custom term. The system will automatically treat your custom values as the standard value in the out of the box report.</p>
             </div>
 
             <div class="section">
@@ -273,6 +273,15 @@
             <div class="section">
                 <div class="section-title">Current Mappings</div>
                 
+                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                    <p style="color: #856404; font-size: 14px; margin: 0;">
+                        <strong>⚠️ Note:</strong> Mappings are added to the table below. Click "Push to Dataset" to apply all changes to Power BI.
+                    </p>
+                </div>
+
+                <button class="btn" onclick="pushToDataset()" style="margin-bottom: 20px; background: linear-gradient(135deg, #10ac84 0%, #06a77d 100%);">
+                    Push to Dataset
+                </button>
                 <table class="mappings-table">
                     <thead>
                         <tr>
@@ -350,12 +359,37 @@
             
             // Animation feedback
             const btn = document.querySelector('.btn');
-            btn.textContent = '✓ Added!';
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Added to table!';
             btn.style.background = '#10ac84';
             setTimeout(() => {
-                btn.textContent = '➕ Add Mapping';
+                btn.textContent = originalText;
                 btn.style.background = '';
             }, 1500);
+        }
+
+        function pushToDataset() {
+            const pushBtn = document.querySelectorAll('.btn')[1]; // Get the Push button
+            const originalText = pushBtn.textContent;
+            
+            // Show loading state
+            pushBtn.textContent = '⏳ Pushing to dataset...';
+            pushBtn.disabled = true;
+            pushBtn.style.opacity = '0.7';
+            
+            // Simulate API call (in real implementation, this would call your XMLA endpoint)
+            setTimeout(() => {
+                // Success animation
+                pushBtn.textContent = '✓ Successfully pushed to dataset!';
+                pushBtn.style.background = '#10ac84';
+                
+                setTimeout(() => {
+                    pushBtn.textContent = originalText;
+                    pushBtn.style.background = '';
+                    pushBtn.disabled = false;
+                    pushBtn.style.opacity = '1';
+                }, 2000);
+            }, 2000);
         }
 
         function deleteMapping(index) {
